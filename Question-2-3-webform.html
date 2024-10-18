@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Form validation with messages on top: Code example - Accessibility Developer Guide example</title>
+        <title>Accessible Feedback Form</title>
         <meta charset="utf-8">
         <style>.control, fieldset {
       margin: 6px 0;
@@ -27,30 +27,52 @@
     </head>
     <body>
         <h1>Feedback form</h1>
-    <form>
-        <div class="control">
-          <label>Full name <span class="required">*</span></label><input id="name" name="name" type="text" />
-        </div>
-        <div class="control">
-          <label>Biography</label><textarea id="biography" name="biography" type="text"></textarea>
-          <span>Include examples on your skills in JavaScript.</span>
-        </div>
-        
-          <div>Gender</div>
+    <!-- Organized form elements within a fieldset and included a legend for better accessibility, specifically for screen readers. -->
+    <form aria-labelledby="form-title" role="form">
+      
+      <fieldset>
+          <!-- Adding a legend to organize and group the form fields -->
+          <legend id="form-title">Form to be Filled</legend>
+          
+          <!-- Added the 'for' attribute to the label, marked the required fields, and included the 'aria-required' attribute for accessibility. -->
           <div class="control">
-            <input id="gender_male" name="gender" type="radio" value="male" /><label>Male</label>
+              <label for="username">Full name <span class="required">*</span></label>
+              <input id="username" name="username" type="text" aria-required="true" />
           </div>
+
+          <!-- Added label connections to form elements and included inline guidance through the use of the aria-describedby attribute-->
           <div class="control">
-            <input id="gender_female" name="gender" type="radio" value="female" /><label>Female</label>
+              <label for="biography">Biography</label>
+              <textarea id="biography" name="biography" aria-describedby="bio-aid"></textarea>
+              <span id="bio-aid">Include examples of your skills in JavaScript.</span>
           </div>
-        
-        <div class="control">
-          <input id="accept_agbs" name="accept_agbs" type="checkbox" value="1" /><label>I accept the terms and conditions</label>
-        </div>
-        <div class="control">
-          <input name="validate" type="hidden" value="1" /><input type="submit" value="Register" />
-        </div>
-      </form>
+
+          <!-- Organized the gender selection buttons within a fieldset to group them together, ensuring better structure and accessibility. -->
+          <fieldset>
+              <legend>Gender</legend>
+              <div class="control">
+                  <input id="gender_male" name="gender" type="radio" value="male" aria-required="true" />
+                  <label for="gender_male">Male</label>
+              </div>
+              <div class="control">
+                  <input id="gender_female" name="gender" type="radio" value="female" aria-required="true" />
+                  <label for="gender_female">Female</label>
+              </div>
+          </fieldset>
+
+          <!-- Included the 'for' attribute in the label and marked the checkbox as required using the 'aria-required' attribute for accessibility. -->
+          <div class="control">
+              <input id="accept_agbs" name="accept_agbs" type="checkbox" value="1" aria-required="true" />
+              <label for="accept_agbs">I accept the terms and conditions</label>
+          </div>
+
+          <!-- Submit button -->
+          <div class="control">
+              <input name="validate" type="hidden" value="1" />
+              <input type="submit" value="Register" />
+          </div>
+      </fieldset>
+  </form>
       
           <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
           <script>"use strict";
@@ -92,12 +114,19 @@
               $referencedElement = $input;
             }
       // R.G. hint: fix next line ;)
-            $error = $('<a>' + message + '</a>');
+           /* $error = $('<a>' + message + '</a>');
             $error.click(function (e) {
               // If we rely on the link's href pointing to the input's ID, it doesn't trigger forms mode in screen readers
               $referencedElement.focus();
               return e.preventDefault();
-            });
+            }); */
+            // Create a span with an aria-live attribute for screen reader announcements
+            $error = $('<span role="alert" aria-live="assertive">' + message + '</span>');
+            $error.click(function (e) {
+           // Bring focus to the referenced element without relying on a link
+             $referencedElement.focus();
+            e.preventDefault();
+              });
             $elementToDescribe.attr('aria-describedby', input + '_description');
             $errorContainer.append('<li>').find('li:last').append($error);
       
